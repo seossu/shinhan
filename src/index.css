@@ -1,0 +1,47 @@
+/* ===================================================
+ * 글로벌 리셋 및 CSS 변수 정의
+ * 밝은 하늘색/푸른색 계열 라이트 테마
+ * =================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* 메인 브랜드 색상 */
+  --primary: #2979FF;
+  --primary-light: #82B1FF;
+  --accent: #00BFA5;
+  --accent-warm: #FF7043;
+
+  /* 배경 색상 (밝은 하늘색 계열) */
+  --bg-light: #E8F4FD;
+  --bg-sky: #D4ECFC;
+  --bg-card: rgba(255, 255, 255, 0.75);
+
+  /* 텍스트 색상 (어두운 남색 계열) */
+  --text-primary: #1A3353;
+  --text-secondary: #4A6B8A;
+  --text-muted: #7FA3C2;
+
+  /* 상태 색상 */
+  --positive: #00C853;
+  --negative: #FF1744;
+
+  /* 보더 및 글래스 */
+  --border: rgba(42, 121, 255, 0.15);
+  --glass: rgba(255, 255, 255, 0.5);
+
+  /* 슬라이더 썸 배경 */
+  --thumb-border: #E8F4FD;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg-light);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
