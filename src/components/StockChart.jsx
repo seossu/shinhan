@@ -8,7 +8,7 @@ import React, { useState, useEffect, useRef } from "react";
  * - 숫자와 부호는 조작 방지를 위해 명확히 표시
  * =================================================== */
 
-// 상승/하락 각각의 색상 옵션
+// 상승/하락 각각의 색상 옵션 (12개씩)
 const UP_COLORS = [
   { id: "red", name: "빨강", color: "#FF1744" },
   { id: "orange", name: "주황", color: "#FF9800" },
@@ -18,6 +18,10 @@ const UP_COLORS = [
   { id: "gold", name: "골드", color: "#FFD700" },
   { id: "mint", name: "민트", color: "#26A69A" },
   { id: "coral", name: "코랄", color: "#FF6B6B" },
+  { id: "lime", name: "라임", color: "#CDDC39" },
+  { id: "amber", name: "앰버", color: "#FFC107" },
+  { id: "rose", name: "로즈", color: "#E91E63" },
+  { id: "emerald", name: "에메랄드", color: "#00C853" },
 ];
 
 const DOWN_COLORS = [
@@ -29,6 +33,10 @@ const DOWN_COLORS = [
   { id: "silver", name: "실버", color: "#C0C0C0" },
   { id: "teal", name: "틸", color: "#009688" },
   { id: "skyblue", name: "하늘", color: "#81D4FA" },
+  { id: "indigo", name: "인디고", color: "#3F51B5" },
+  { id: "slate", name: "슬레이트", color: "#607D8B" },
+  { id: "violet", name: "바이올렛", color: "#7C4DFF" },
+  { id: "ocean", name: "오션", color: "#0288D1" },
 ];
 
 // 랜덤 주식 데이터 생성

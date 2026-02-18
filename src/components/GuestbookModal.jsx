@@ -81,15 +81,19 @@ export default function GuestbookModal({ onClose }) {
 
         {/* 방명록 입력 */}
         <form className="guestbook-form" onSubmit={handleSubmit}>
+          {/* 팀 이름 입력 (첫 번째 줄) */}
           <div className="form-row">
             <input
               type="text"
-              placeholder="팀 이름"
+              placeholder="팀 이름을 입력해주세요"
               value={teamName}
               onChange={(e) => setTeamName(e.target.value)}
-              className="guestbook-team-input"
+              className="guestbook-team-input full-width"
               maxLength={20}
             />
+          </div>
+          {/* 평점 선택 (두 번째 줄) */}
+          <div className="form-row rating-row">
             <div className="rating-selector">
               <span className="rating-label">평점:</span>
               {[1, 2, 3, 4, 5].map((star) => (
