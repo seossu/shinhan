@@ -24,6 +24,9 @@ export default function AttendanceModal({ onClose, onSelectGame, completedGames 
         <p className="modal-subtitle">
           미니게임을 완료하고 포인트를 받으세요!
         </p>
+        <div className="attendance-status-badge">
+          {totalCompleted} / {GAMES.length} 완료
+        </div>
 
         <div className="attendance-progress">
           <div className="progress-bar">

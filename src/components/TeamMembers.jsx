@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 /* ===================================================
  * 팀원 버튼 컴포넌트
@@ -11,7 +11,8 @@ const TEAM_MEMBERS = [
   { id: 4, name: "팀원 4", avatar: "👨‍🔬", color: "#96CEB4" },
 ];
 
-export default function TeamMembers({ onSelectMember, onOpenChat, onOpenGuestbook }) {
+export default function TeamMembers({ onSelectMember, onOpenChat, onOpenGuestbook, onOpenTreasureHunt, onOpenTeamBattle }) {
+  const [showEventButtons, setShowEventButtons] = useState(false);
   return (
     <div className="team-section">
       {/* 섹션 헤더 */}
@@ -61,6 +62,40 @@ export default function TeamMembers({ onSelectMember, onOpenChat, onOpenGuestboo
               <span className="social-desc">응원 메시지 남기기</span>
             </div>
           </button>
+        </div>
+
+        {/* 특별 이벤트 카드 */}
+        <div className="event-card">
+          <button
+            className={`event-toggle-btn ${showEventButtons ? "active" : ""}`}
+            onClick={() => setShowEventButtons(!showEventButtons)}
+          >
+            <span className="event-icon">🎉</span>
+            <div className="event-info">
+              <span className="event-title">특별 이벤트</span>
+              <span className="event-desc">보물찾기 & 팀 대항전</span>
+            </div>
+            <span className="event-arrow">{showEventButtons ? "▲" : "▼"}</span>
+          </button>
+
+          {showEventButtons && (
+            <div className="event-buttons">
+              <button className="event-btn treasure" onClick={onOpenTreasureHunt}>
+                <span className="event-btn-icon">🗺️</span>
+                <div className="event-btn-info">
+                  <span className="event-btn-title">보물찾기</span>
+                  <span className="event-btn-desc">지도에서 보물을 찾아라!</span>
+                </div>
+              </button>
+              <button className="event-btn battle" onClick={onOpenTeamBattle}>
+                <span className="event-btn-icon">⚔️</span>
+                <div className="event-btn-info">
+                  <span className="event-btn-title">팀 대항전</span>
+                  <span className="event-btn-desc">다른 팀과 모의 투자 배틀</span>
+                </div>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

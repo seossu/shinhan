@@ -71,7 +71,7 @@ export default function GoalSetting({ profit, points, onPointsChange }) {
           <div className="celebration-content">
             <span className="celebration-emoji">🎉</span>
             <span className="celebration-text">목표 달성!</span>
-            <span className="celebration-bonus">+{Math.floor(goalProfit * 2)}P 획득!</span>
+            <span className="celebration-bonus">+{Math.floor(goalProfit * 2)}P <br/>획득!</span>
           </div>
         </div>
       )}

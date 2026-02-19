@@ -6,7 +6,13 @@ import SECTOR_CONFIG from "../config/sectorConfig";
  * MTS 데이터 연동을 시뮬레이션하기 위한 테스트 컨트롤 패널입니다.
  * 수익률 슬라이더와 섹터 선택 버튼으로 구성됩니다.
  * =================================================== */
-export default function AdminPanel({ profit, sector, exp, onProfitChange, onSectorChange, onExpChange }) {
+const CHARACTER_OPTIONS = [
+  { id: 1, name: "캐릭터 1", icon: "🧑" },
+  { id: 2, name: "캐릭터 2", icon: "👧" },
+  { id: 3, name: "캐릭터 3", icon: "🧒" },
+];
+
+export default function AdminPanel({ profit, sector, exp, charType, onProfitChange, onSectorChange, onExpChange, onCharTypeChange }) {
   /* 수익률 양수/음수에 따른 색상 */
   const isPositive = profit >= 0;
   const profitColor = isPositive
@@ -85,6 +91,34 @@ export default function AdminPanel({ profit, sector, exp, onProfitChange, onSect
               >
                 <span className="sector-icon">{config.icon}</span>
                 {config.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ===== 캐릭터 선택 버튼 ===== */}
+        <div className="control-group" style={{ gridColumn: "1 / -1", background: "#ffe0e0", padding: "12px", borderRadius: "8px" }}>
+          <label style={{ color: "#c00", fontWeight: "bold" }}>🎭 캐릭터 선택 (테스트)</label>
+          <div className="char-buttons" style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+            {CHARACTER_OPTIONS.map((char) => (
+              <button
+                key={char.id}
+                style={{
+                  flex: 1,
+                  padding: "12px",
+                  border: charType === char.id ? "3px solid #f59e0b" : "2px solid #ccc",
+                  borderRadius: "8px",
+                  background: charType === char.id ? "#fef3c7" : "#fff",
+                  cursor: "pointer",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "4px"
+                }}
+                onClick={() => onCharTypeChange(char.id)}
+              >
+                <span style={{ fontSize: "24px" }}>{char.icon}</span>
+                <span style={{ fontSize: "12px" }}>{char.name}</span>
               </button>
             ))}
           </div>

@@ -1,7 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import Phaser from "phaser";
-import IslandScene from "./game/IslandScene";
-import Dashboard from "./components/Dashboard";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import AdminPanel from "./components/AdminPanel";
 import AttendanceModal from "./components/AttendanceModal";
 import BalanceGame from "./components/BalanceGame";
@@ -13,8 +10,56 @@ import TeamMembers from "./components/TeamMembers";
 import PortfolioModal from "./components/PortfolioModal";
 import ChatModal from "./components/ChatModal";
 import GuestbookModal from "./components/GuestbookModal";
+import GiftModal from "./components/GiftModal";
+import TeamBattle from "./components/TeamBattle";
 import GoalSetting from "./components/GoalSetting";
 import "./App.css";
+
+/* 섹터별 배경 이미지 매핑 */
+const SECTOR_BG_MAP = {
+  default: "/1.png",
+  it: "/2.png",
+  bio: "/3.png",
+  energy: "/4.png",
+  airport: "/5.png",
+  finance: "/6.png",
+};
+
+/* 캐릭터 타입별 경험치 이미지 매핑 */
+const CHARACTER_TYPES = {
+  1: { name: "캐릭터 1", stages: ["/a.png", "/b.png", "/c.png", "/d.png", "/e.png"] },
+  2: { name: "캐릭터 2", stages: ["/2-a.png", "/2-b.png", "/2-c.png", "/2-d.png", "/2-e.png"] },
+  3: { name: "캐릭터 3", stages: ["/3-a.png", "/3-b.png", "/3-c.png", "/3-d.png", "/3-e.png"] },
+};
+
+/* 특별 캐릭터 이미지 */
+const SPECIAL_CHARACTERS = {
+  1: "/1-s.png",
+  2: "/2-s.png",
+  3: "/3-s.png",
+};
+
+/* 경험치 단계 (0~4) */
+const EXP_THRESHOLDS = [0, 20, 40, 60, 80];
+
+function getCharSrc(exp, charType = 1, isSpecial = false) {
+  if (isSpecial) {
+    return SPECIAL_CHARACTERS[charType] || SPECIAL_CHARACTERS[1];
+  }
+  const stages = CHARACTER_TYPES[charType]?.stages || CHARACTER_TYPES[1].stages;
+  for (let i = EXP_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (exp >= EXP_THRESHOLDS[i]) return stages[i];
+  }
+  return stages[0];
+}
+
+/* 캐릭터 레벨 계산 (0~4) */
+function getCharLevel(exp) {
+  for (let i = EXP_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (exp >= EXP_THRESHOLDS[i]) return i;
+  }
+  return 0;
+}
 
 /* ===================================================
  * GrowIslandApp 메인 컴포넌트
@@ -31,71 +76,92 @@ export default function GrowIslandApp() {
   const [selectedMember, setSelectedMember] = useState(null);
   const [showChat, setShowChat] = useState(false);
   const [showGuestbook, setShowGuestbook] = useState(false);
+  const [showGift, setShowGift] = useState(false);
+  const [showPanel, setShowPanel] = useState(false); // UI 패널 토글
+  const [giftChances, setGiftChances] = useState(0); // 선물 교환권 개수
+  const [receivedGifts, setReceivedGifts] = useState([]); // 받은 선물 목록
+  const [showLevelUpAlert, setShowLevelUpAlert] = useState(false); // 레벨업 알림
+  const [showTeamBattle, setShowTeamBattle] = useState(false); // 팀 대항전 모달
+  const [speechBubble, setSpeechBubble] = useState(""); // 캐릭터 말풍선
+  const [showBubble, setShowBubble] = useState(false); // 말풍선 표시 여부
+  const [charType, setCharType] = useState(1); // 캐릭터 타입 (1, 2, 3)
+  const [isSpecialChar, setIsSpecialChar] = useState(false); // 특별 캐릭터 모드
+  const prevLevelRef = useRef(0); // 이전 레벨 추적
 
-  const gameRef = useRef(null);
-  const sceneRef = useRef(null);
-  const containerRef = useRef(null);
-  const isMountedRef = useRef(false);
+  /* 캐릭터 대사 목록 */
+  const CHARACTER_SPEECHES = [
+    "오늘 날씨 좋죠? 투자하기 딱 좋은 날이에요~",
+    "와! 오늘 수익률이 좋은데요?",
+    "신한투자증권을 사용하면 수익률이 오른다는 소문이...",
+    "장기 투자가 답이에요! 조급해하지 마세요~",
+    "분산 투자, 잊지 마세요!",
+    "오늘도 화이팅! 좋은 하루 되세요~",
+    "주식은 타이밍보다 시간이에요!",
+    "혹시 출석체크 하셨나요?",
+    "팀원들과 함께하면 투자도 즐거워요!",
+    "목표 수익률 달성하면 선물이 있어요!",
+    "저와 함께 성장해요! 경험치를 모아보세요~",
+    "오늘의 미니게임, 도전해보세요!",
+  ];
 
-  /* ===================================================
-   * Phaser 게임 인스턴스 초기화 (모바일 19.5:9 비율)
-   * 화면 너비 기준으로 동적 계산
-   * =================================================== */
+  /* 배경 이미지 및 캐릭터 */
+  const bgSrc = useMemo(() => SECTOR_BG_MAP[sector] || SECTOR_BG_MAP.default, [sector]);
+  const charSrc = useMemo(() => getCharSrc(exp, charType, isSpecialChar), [exp, charType, isSpecialChar]);
+  const currentLevel = useMemo(() => getCharLevel(exp), [exp]);
+  const isNegative = profit < 0;
+
+  /* 캐릭터 레벨업 감지 및 선물 교환권 지급 */
   useEffect(() => {
-    if (isMountedRef.current || !containerRef.current) return;
-    isMountedRef.current = true;
-    containerRef.current.innerHTML = "";
+    if (currentLevel > prevLevelRef.current) {
+      // 레벨업 발생
+      setGiftChances((prev) => prev + 1);
+      setShowLevelUpAlert(true);
+      // 3초 후 알림 닫기
+      setTimeout(() => setShowLevelUpAlert(false), 3000);
+    }
+    prevLevelRef.current = currentLevel;
+  }, [currentLevel]);
 
-    // 모바일 앱 컨테이너 기준 게임 크기 (19.5:10 비율)
-    const gameWidth = 405; // 앱 컨테이너(437px) - 패딩(32px)
-    const gameHeight = 250; // 게임 영역 높이
+  /* 캐릭터 말풍선 주기적 표시 (15초마다 5초간) */
+  const bubbleTimeoutRef = useRef(null);
 
-    const config = {
-      type: Phaser.CANVAS,
-      width: gameWidth,
-      height: gameHeight,
-      parent: containerRef.current,
-      backgroundColor: "#87CEEB",
-      scene: [IslandScene],
-      render: { antialias: true, pixelArt: false },
-      audio: { noAudio: true },
-    };
+  const showRandomSpeech = () => {
+    // 이전 타임아웃 취소
+    if (bubbleTimeoutRef.current) {
+      clearTimeout(bubbleTimeoutRef.current);
+    }
+    const randomIndex = Math.floor(Math.random() * CHARACTER_SPEECHES.length);
+    setSpeechBubble(CHARACTER_SPEECHES[randomIndex]);
+    setShowBubble(true);
+    // 5초 후 말풍선 숨기기
+    bubbleTimeoutRef.current = setTimeout(() => setShowBubble(false), 5000);
+  };
 
-    gameRef.current = new Phaser.Game(config);
-
-    /* 씬 연결 폴링 */
-    const pollInterval = setInterval(() => {
-      try {
-        const scene = gameRef.current?.scene?.getScene("IslandScene");
-        if (scene && scene.isReady) {
-          sceneRef.current = scene;
-          console.log("[Grow-Island] 씬 연결 성공!");
-          scene.updateState(profit, sector, exp);
-          clearInterval(pollInterval);
-        }
-      } catch (e) { /* 초기화 중 */ }
-    }, 100);
-
-    const timeout = setTimeout(() => clearInterval(pollInterval), 10000);
+  useEffect(() => {
+    // 처음 2초 후 첫 말풍선 표시
+    const initialTimeout = setTimeout(showRandomSpeech, 2000);
+    // 15초마다 말풍선 표시
+    const interval = setInterval(showRandomSpeech, 15000);
 
     return () => {
-      clearInterval(pollInterval);
-      clearTimeout(timeout);
-      if (gameRef.current) {
-        gameRef.current.destroy(true);
-        gameRef.current = null;
-        sceneRef.current = null;
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+      if (bubbleTimeoutRef.current) {
+        clearTimeout(bubbleTimeoutRef.current);
       }
-      isMountedRef.current = false;
     };
   }, []);
 
-  /* 데이터 변경 → 씬 반영 */
-  useEffect(() => {
-    if (sceneRef.current && sceneRef.current.isReady) {
-      sceneRef.current.updateState(profit, sector, exp);
-    }
-  }, [profit, sector, exp]);
+  /* 캐릭터 클릭 시 말풍선 표시 */
+  const handleCharacterClick = () => {
+    showRandomSpeech();
+  };
+
+  /* 선물 교환권 사용 */
+  const handleUseGiftChance = (categoryId, gift) => {
+    setGiftChances((prev) => Math.max(0, prev - 1));
+    setReceivedGifts((prev) => [...prev, gift]);
+  };
 
   /* 게임 완료 시 포인트 지급 */
   const handleGameComplete = (gameId) => {
@@ -192,6 +258,44 @@ export default function GrowIslandApp() {
             </div>
           </div>
 
+          {/* 캐릭터 선택 */}
+          <div className="sim-control">
+            <label className="sim-label">
+              <span>🎭 캐릭터 선택</span>
+            </label>
+            <div className="sim-characters">
+              {[
+                { id: 1, label: '🧑 캐릭터 1' },
+                { id: 2, label: '👧 캐릭터 2' },
+                { id: 3, label: '🧒 캐릭터 3' },
+              ].map((c) => (
+                <button
+                  key={c.id}
+                  className={`sim-char-btn ${charType === c.id ? 'active' : ''}`}
+                  onClick={() => setCharType(c.id)}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 특별 캐릭터 토글 */}
+          <div className="sim-control">
+            <label className="sim-label">
+              <span>⭐ 특별 캐릭터</span>
+              <span className={`sim-value ${isSpecialChar ? 'positive' : ''}`}>
+                {isSpecialChar ? 'ON' : 'OFF'}
+              </span>
+            </label>
+            <button
+              className={`sim-special-btn ${isSpecialChar ? 'active' : ''}`}
+              onClick={() => setIsSpecialChar(!isSpecialChar)}
+            >
+              {isSpecialChar ? '✨ 특별 캐릭터 활성화됨' : '특별 캐릭터 활성화'}
+            </button>
+          </div>
+
           {/* 현재 상태 요약 */}
           <div className="sim-summary">
             <div className="sim-summary-item">
@@ -208,89 +312,119 @@ export default function GrowIslandApp() {
 
       {/* 모바일 앱 컨테이너 */}
       <div className="mobile-app">
-        <div className="app-bg" />
         <div className="app-container">
-        {/* 상단 헤더 (고정) */}
-        <header className="mobile-header">
-          <img src="/logo.png" alt="Logo" className="mobile-logo" />
-          <div className="header-stats">
-            <div className="header-stat">
-              <span className="stat-icon">💰</span>
-              <span className={`stat-value ${profit >= 0 ? 'positive' : 'negative'}`}>
-                {profit >= 0 ? '+' : ''}{profit.toFixed(1)}%
-              </span>
+          {/* 전체 배경 이미지 (섹터별) */}
+          <div className={`app-background ${isNegative ? 'negative' : ''}`}>
+            <img src={bgSrc} alt="Island Background" className="bg-image" />
+            {/* 캐릭터 오버레이 */}
+            <div className="char-container" onClick={handleCharacterClick}>
+              <img src={charSrc} alt="Character" className="char-image" />
+              {/* 캐릭터 말풍선 */}
+              {showBubble && (
+                <div className="speech-bubble">
+                  <span className="speech-text">{speechBubble}</span>
+                </div>
+              )}
             </div>
-            <div className="header-stat">
-              <span className="stat-icon">⭐</span>
-              <span className="stat-value">{points}P</span>
+            {/* 날씨 효과 오버레이 */}
+            {isNegative && <div className="weather-rain" />}
+            {profit > 20 && <div className="weather-sunny" />}
+          </div>
+
+          {/* 상단 헤더 (반투명, 배경 위에 떠있음) */}
+          <header className="mobile-header floating">
+            <img src="/logo.png" alt="Logo" className="mobile-logo" />
+            <div className="header-stats">
+              <div className="header-stat">
+                <span className="stat-icon">💰</span>
+                <span className={`stat-value ${profit >= 0 ? 'positive' : 'negative'}`}>
+                  {profit >= 0 ? '+' : ''}{profit.toFixed(1)}%
+                </span>
+              </div>
+              <div className="header-stat">
+                <span className="stat-icon">🎯</span>
+                <span className="stat-value exp">{exp}%</span>
+              </div>
+              <div className="header-stat">
+                <span className="stat-icon">⭐</span>
+                <span className="stat-value">{points}P</span>
+              </div>
+            </div>
+          </header>
+
+          {/* 토글 패널 (접히는 UI) */}
+          <div className={`toggle-panel ${showPanel ? 'open' : ''}`}>
+            {/* 패널 핸들 (드래그 바) */}
+            <button
+              className="panel-handle"
+              onClick={() => setShowPanel(!showPanel)}
+            >
+              <span className="handle-bar" />
+              <span className="handle-text">{showPanel ? '닫기' : '메뉴 열기'}</span>
+            </button>
+
+            {/* 패널 내용 */}
+            <div className="panel-content">
+              {/* 목표 수익률 */}
+              <GoalSetting
+                profit={profit}
+                points={points}
+                onPointsChange={setPoints}
+              />
+
+              {/* 퀵 액션 버튼들 */}
+              <div className="quick-actions">
+                <button className="quick-btn attendance" onClick={() => setShowAttendance(true)}>
+                  <span className="quick-icon">📅</span>
+                  <span className="quick-label">출석체크</span>
+                </button>
+                <button className="quick-btn chart" onClick={() => setShowStockChart(true)}>
+                  <span className="quick-icon">📈</span>
+                  <span className="quick-label">실시간 차트</span>
+                </button>
+              </div>
+
+              {/* 팀 커뮤니티 */}
+              <TeamMembers
+                onSelectMember={(member) => setSelectedMember(member)}
+                onOpenChat={() => setShowChat(true)}
+                onOpenGuestbook={() => setShowGuestbook(true)}
+                onOpenTreasureHunt={() => window.open("/treasure-hunt.html", "_blank")}
+                onOpenTeamBattle={() => setShowTeamBattle(true)}
+              />
             </div>
           </div>
-        </header>
 
-        {/* 스크롤 가능한 메인 컨텐츠 */}
-        <main className="mobile-content">
-          {/* 게임 영역 */}
-          <div className="game-area">
-            <div id="phaser-container" ref={containerRef} />
-          </div>
-
-          {/* 목표 수익률 */}
-          <GoalSetting
-            profit={profit}
-            points={points}
-            onPointsChange={setPoints}
-          />
-
-          {/* 퀵 액션 버튼들 */}
-          <div className="quick-actions">
-            <button className="quick-btn attendance" onClick={() => setShowAttendance(true)}>
-              <span className="quick-icon">📅</span>
-              <span className="quick-label">출석체크</span>
-              <span className="quick-badge">{completedGames.length}/4</span>
+          {/* 하단 네비게이션 바 (고정) */}
+          <nav className="mobile-nav">
+            <button className="nav-item nav-gift" onClick={() => setShowGift(true)}>
+              <span className="nav-icon">🎁</span>
+              <span className="nav-label">선물</span>
+              {giftChances > 0 && <span className="nav-badge">{giftChances}</span>}
             </button>
-            <button className="quick-btn chart" onClick={() => setShowStockChart(true)}>
-              <span className="quick-icon">📈</span>
-              <span className="quick-label">실시간 차트</span>
+            <button
+              className={`nav-item nav-toggle ${showPanel ? 'active' : ''}`}
+              onClick={() => setShowPanel(!showPanel)}
+            >
+              <span className="nav-icon">{showPanel ? '✕' : '☰'}</span>
+              <span className="nav-label">{showPanel ? '닫기' : '메뉴'}</span>
             </button>
-          </div>
+            <button className="nav-item" onClick={() => setShowGuestbook(true)}>
+              <span className="nav-icon">📝</span>
+              <span className="nav-label">방명록</span>
+            </button>
+          </nav>
 
-          {/* Admin 패널 (접을 수 있게) */}
-          <AdminPanel
-            profit={profit}
-            sector={sector}
-            exp={exp}
-            onProfitChange={setProfit}
-            onSectorChange={setSector}
-            onExpChange={setExp}
-          />
-
-          {/* 팀 커뮤니티 */}
-          <TeamMembers
-            onSelectMember={(member) => setSelectedMember(member)}
-            onOpenChat={() => setShowChat(true)}
-            onOpenGuestbook={() => setShowGuestbook(true)}
-          />
-        </main>
-
-        {/* 하단 네비게이션 바 (고정) */}
-        <nav className="mobile-nav">
-          <button className="nav-item active">
-            <span className="nav-icon">🏝️</span>
-            <span className="nav-label">홈</span>
-          </button>
-          <button className="nav-item" onClick={() => setShowChat(true)}>
-            <span className="nav-icon">💬</span>
-            <span className="nav-label">채팅</span>
-          </button>
-          <button className="nav-item" onClick={() => setShowGuestbook(true)}>
-            <span className="nav-icon">📝</span>
-            <span className="nav-label">방명록</span>
-          </button>
-          <button className="nav-item" onClick={() => setShowStockChart(true)}>
-            <span className="nav-icon">📊</span>
-            <span className="nav-label">차트</span>
-          </button>
-        </nav>
+          {/* 레벨업 알림 */}
+          {showLevelUpAlert && (
+            <div className="level-up-alert">
+              <div className="level-up-content">
+                <span className="level-up-icon">🎉</span>
+                <span className="level-up-text">캐릭터가 성장했습니다!</span>
+                <span className="level-up-reward">🎟️ 선물 교환권 +1</span>
+              </div>
+            </div>
+          )}
 
         {/* 모달들 - 앱 컨테이너 내부에 배치 */}
         {/* 출석체크 모달 */}
@@ -337,6 +471,21 @@ export default function GrowIslandApp() {
           <GuestbookModal
             onClose={() => setShowGuestbook(false)}
           />
+        )}
+
+        {/* 선물 혜택 모달 */}
+        {showGift && (
+          <GiftModal
+            onClose={() => setShowGift(false)}
+            giftChances={giftChances}
+            onUseChance={handleUseGiftChance}
+            receivedGifts={receivedGifts}
+          />
+        )}
+
+        {/* 팀 대항전 모달 */}
+        {showTeamBattle && (
+          <TeamBattle onClose={() => setShowTeamBattle(false)} />
         )}
       </div>
       </div>
