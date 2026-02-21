@@ -17,36 +17,47 @@ import "./App.css";
 
 /* 섹터별 배경 이미지 매핑 */
 const SECTOR_BG_MAP = {
-  default: "/1.png",
-  it: "/2.png",
-  bio: "/3.png",
-  energy: "/4.png",
-  airport: "/5.png",
-  finance: "/6.png",
+  default: "/back1.png",
+  it: "/back2.png",
+  bio: "/back3.png",
+  energy: "/back4.png",
+  airport: "/back5.png",
+  finance: "/back6.png",
 };
 
-/* 캐릭터 타입별 경험치 이미지 매핑 */
+/* 캐릭터 타입별 경험치 이미지 매핑 (0~7) */
 const CHARACTER_TYPES = {
-  1: { name: "캐릭터 1", stages: ["/a.png", "/b.png", "/c.png", "/d.png", "/e.png"] },
-  2: { name: "캐릭터 2", stages: ["/2-a.png", "/2-b.png", "/2-c.png", "/2-d.png", "/2-e.png"] },
-  3: { name: "캐릭터 3", stages: ["/3-a.png", "/3-b.png", "/3-c.png", "/3-d.png", "/3-e.png"] },
+  0: { name: "쏠", stages: ["/0-a.png", "/0-b.png", "/0-c.png", "/0-d.png", "/0-e.png"] },
+  1: { name: "레이", stages: ["/1-a.png", "/1-b.png", "/1-c.png", "/1-d.png", "/1-e.png"] },
+  2: { name: "플리", stages: ["/2-a.png", "/2-b.png", "/2-c.png", "/2-d.png", "/2-e.png"] },
+  3: { name: "루루라라", stages: ["/3-a.png", "/3-b.png", "/3-c.png", "/3-d.png", "/3-e.png"] },
+  4: { name: "슈", stages: ["/4-a.png", "/4-b.png", "/4-c.png", "/4-d.png", "/4-e.png"] },
+  5: { name: "몰리", stages: ["/5-a.png", "/5-b.png", "/5-c.png", "/5-d.png", "/5-e.png"] },
+  6: { name: "도레미", stages: ["/6-a.png", "/6-b.png", "/6-c.png", "/6-d.png", "/6-e.png"] },
+  7: { name: "리노", stages: ["/7-a.png", "/7-b.png", "/7-c.png", "/7-d.png", "/7-e.png"] },
 };
 
 /* 특별 캐릭터 이미지 */
 const SPECIAL_CHARACTERS = {
+  0: "/0-s.png",
   1: "/1-s.png",
   2: "/2-s.png",
   3: "/3-s.png",
+  4: "/4-s.png",
+  5: "/5-s.png",
+  6: "/6-s.png",
+  7: "/7-s.png",
 };
 
 /* 경험치 단계 (0~4) */
 const EXP_THRESHOLDS = [0, 20, 40, 60, 80];
 
-function getCharSrc(exp, charType = 1, isSpecial = false) {
+function getCharSrc(exp, charType = 0, isSpecial = false) {
+  const safeCharType = charType ?? 0;
   if (isSpecial) {
-    return SPECIAL_CHARACTERS[charType] || SPECIAL_CHARACTERS[1];
+    return SPECIAL_CHARACTERS[safeCharType] || SPECIAL_CHARACTERS[0];
   }
-  const stages = CHARACTER_TYPES[charType]?.stages || CHARACTER_TYPES[1].stages;
+  const stages = CHARACTER_TYPES[safeCharType]?.stages || CHARACTER_TYPES[0].stages;
   for (let i = EXP_THRESHOLDS.length - 1; i >= 0; i--) {
     if (exp >= EXP_THRESHOLDS[i]) return stages[i];
   }
@@ -84,9 +95,17 @@ export default function GrowIslandApp() {
   const [showTeamBattle, setShowTeamBattle] = useState(false); // 팀 대항전 모달
   const [speechBubble, setSpeechBubble] = useState(""); // 캐릭터 말풍선
   const [showBubble, setShowBubble] = useState(false); // 말풍선 표시 여부
-  const [charType, setCharType] = useState(1); // 캐릭터 타입 (1, 2, 3)
+  const [charType, setCharType] = useState(null); // 캐릭터 타입 (0~7), null이면 선택 안됨
   const [isSpecialChar, setIsSpecialChar] = useState(false); // 특별 캐릭터 모드
+  const [showMobileSimModal, setShowMobileSimModal] = useState(false); // 모바일 시뮬레이션 모달
+  const [showCharSelect, setShowCharSelect] = useState(true); // 캐릭터 선택창 표시 여부
   const prevLevelRef = useRef(0); // 이전 레벨 추적
+
+  /* 캐릭터 선택 처리 */
+  const handleSelectCharacter = (id) => {
+    setCharType(id);
+    setShowCharSelect(false);
+  };
 
   /* 캐릭터 대사 목록 */
   const CHARACTER_SPEECHES = [
@@ -264,17 +283,13 @@ export default function GrowIslandApp() {
               <span>🎭 캐릭터 선택</span>
             </label>
             <div className="sim-characters">
-              {[
-                { id: 1, label: '🧑 캐릭터 1' },
-                { id: 2, label: '👧 캐릭터 2' },
-                { id: 3, label: '🧒 캐릭터 3' },
-              ].map((c) => (
+              {[0, 1, 2, 3, 4, 5, 6, 7].map((id) => (
                 <button
-                  key={c.id}
-                  className={`sim-char-btn ${charType === c.id ? 'active' : ''}`}
-                  onClick={() => setCharType(c.id)}
+                  key={id}
+                  className={`sim-char-btn ${charType === id ? 'active' : ''}`}
+                  onClick={() => setCharType(id)}
                 >
-                  {c.label}
+                  {CHARACTER_TYPES[id].name}
                 </button>
               ))}
             </div>
@@ -318,7 +333,7 @@ export default function GrowIslandApp() {
             <img src={bgSrc} alt="Island Background" className="bg-image" />
             {/* 캐릭터 오버레이 */}
             <div className="char-container" onClick={handleCharacterClick}>
-              <img src={charSrc} alt="Character" className="char-image" />
+              <img src={charSrc} alt="Character" className={`char-image ${charSrc === '/5-d.png' ? 'char-small' : ''}`} />
               {/* 캐릭터 말풍선 */}
               {showBubble && (
                 <div className="speech-bubble">
@@ -486,6 +501,138 @@ export default function GrowIslandApp() {
         {/* 팀 대항전 모달 */}
         {showTeamBattle && (
           <TeamBattle onClose={() => setShowTeamBattle(false)} />
+        )}
+
+        {/* 모바일 시뮬레이션 플로팅 버튼 */}
+        <button
+          className="mobile-sim-fab"
+          onClick={() => setShowMobileSimModal(true)}
+        >
+          🎮
+        </button>
+
+        {/* 모바일 시뮬레이션 모달 */}
+        {showMobileSimModal && (
+          <div className="modal-overlay" onClick={() => setShowMobileSimModal(false)}>
+            <div className="modal-content mobile-sim-modal" onClick={(e) => e.stopPropagation()}>
+              <button className="modal-close" onClick={() => setShowMobileSimModal(false)}>✕</button>
+
+              <h2 className="modal-title">🎮 시뮬레이션 컨트롤</h2>
+              <p className="modal-subtitle">투자 데이터를 조정해보세요</p>
+
+              {/* 수익률 조절 */}
+              <div className="mobile-sim-control">
+                <label className="mobile-sim-label">
+                  <span>📈 수익률</span>
+                  <span className={`mobile-sim-value ${profit >= 0 ? 'positive' : 'negative'}`}>
+                    {profit >= 0 ? '+' : ''}{profit.toFixed(1)}%
+                  </span>
+                </label>
+                <input
+                  type="range"
+                  min="-50"
+                  max="50"
+                  step="0.5"
+                  value={profit}
+                  onChange={(e) => setProfit(parseFloat(e.target.value))}
+                  className="mobile-sim-slider"
+                />
+              </div>
+
+              {/* 경험치 조절 */}
+              <div className="mobile-sim-control">
+                <label className="mobile-sim-label">
+                  <span>⭐ 경험치</span>
+                  <span className="mobile-sim-value">{exp}%</span>
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="1"
+                  value={exp}
+                  onChange={(e) => setExp(parseInt(e.target.value))}
+                  className="mobile-sim-slider exp"
+                />
+              </div>
+
+              {/* 섹터 선택 */}
+              <div className="mobile-sim-control">
+                <label className="mobile-sim-label">
+                  <span>🏢 섹터 (배경)</span>
+                </label>
+                <div className="mobile-sim-sectors">
+                  {[
+                    { id: 'default', label: '🏝️', name: '기본' },
+                    { id: 'it', label: '💻', name: 'IT' },
+                    { id: 'bio', label: '🧬', name: '바이오' },
+                    { id: 'energy', label: '⚡', name: '에너지' },
+                    { id: 'airport', label: '✈️', name: '항공' },
+                    { id: 'finance', label: '🏦', name: '금융' },
+                  ].map((s) => (
+                    <button
+                      key={s.id}
+                      className={`mobile-sim-sector-btn ${sector === s.id ? 'active' : ''}`}
+                      onClick={() => setSector(s.id)}
+                    >
+                      <span>{s.label}</span>
+                      <span className="sector-name">{s.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 캐릭터 선택 */}
+              <div className="mobile-sim-control">
+                <label className="mobile-sim-label">
+                  <span>🎭 캐릭터</span>
+                </label>
+                <div className="mobile-sim-chars">
+                  {[0, 1, 2, 3, 4, 5, 6, 7].map((id) => (
+                    <button
+                      key={id}
+                      className={`mobile-sim-char-btn ${charType === id ? 'active' : ''}`}
+                      onClick={() => setCharType(id)}
+                    >
+                      <span className="char-name">{CHARACTER_TYPES[id].name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 특별 캐릭터 토글 */}
+              <div className="mobile-sim-control">
+                <button
+                  className={`mobile-sim-special-btn ${isSpecialChar ? 'active' : ''}`}
+                  onClick={() => setIsSpecialChar(!isSpecialChar)}
+                >
+                  ⭐ 특별 캐릭터 {isSpecialChar ? 'ON' : 'OFF'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 캐릭터 선택 모달 (앱 시작 시) */}
+        {showCharSelect && (
+          <div className="char-select-overlay">
+            <div className="char-select-modal">
+              <h2 className="char-select-title">캐릭터를 선택하세요</h2>
+              <p className="char-select-subtitle">함께 성장할 캐릭터를 골라주세요!</p>
+              <div className="char-select-grid">
+                {[0, 1, 2, 3, 4, 5, 6, 7].map((id) => (
+                  <button
+                    key={id}
+                    className="char-select-btn"
+                    onClick={() => handleSelectCharacter(id)}
+                  >
+                    <img src={`/${id}.png`} alt={CHARACTER_TYPES[id].name} className="char-select-img" />
+                    <span className="char-select-name">{CHARACTER_TYPES[id].name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
       </div>
       </div>
