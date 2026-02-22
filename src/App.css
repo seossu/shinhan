@@ -1685,101 +1685,148 @@ body {
   max-width: 420px;
 }
 
-.attendance-progress {
-  margin-bottom: 20px;
-}
-
-.progress-bar {
-  height: 8px;
-  background: rgba(41, 121, 255, 0.1);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
-  border-radius: 4px;
-  transition: width 0.5s ease;
-}
-
-.progress-text {
-  font-size: 13px;
-  color: var(--text-secondary);
-  text-align: center;
-  display: block;
-}
-
-.attendance-games {
+/* 완료 상태 */
+.attendance-done {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.attendance-game-btn {
-  display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px;
-  background: rgba(41, 121, 255, 0.04);
-  border: 2px solid var(--border);
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all 0.3s;
-  text-align: left;
+  gap: 8px;
+  padding: 24px 0 8px;
+  text-align: center;
 }
 
-.attendance-game-btn:active:not(:disabled) {
-  transform: scale(0.98);
-  border-color: var(--primary);
-  background: rgba(41, 121, 255, 0.08);
+.attendance-done-icon {
+  font-size: 52px;
+  margin-bottom: 4px;
 }
 
-.attendance-game-btn.completed {
-  background: rgba(0, 200, 83, 0.08);
-  border-color: var(--positive);
-  cursor: default;
-}
-
-.attendance-game-btn .game-icon {
-  font-size: 28px;
-  flex-shrink: 0;
-}
-
-.attendance-game-btn .game-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.attendance-game-btn .game-name {
-  font-size: 15px;
-  font-weight: 600;
+.attendance-done-title {
+  font-size: 18px;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
-.attendance-game-btn .game-points {
-  font-size: 13px;
-  color: var(--primary);
-  font-weight: 500;
+.attendance-done-sub {
+  font-size: 15px;
+  color: var(--text-secondary);
 }
 
-.attendance-game-btn .check-mark {
-  font-size: 20px;
+.attendance-done-points {
+  font-size: 16px;
+  font-weight: 700;
   color: var(--positive);
-  font-weight: bold;
+  background: rgba(0, 200, 83, 0.1);
+  padding: 6px 18px;
+  border-radius: 20px;
+  margin-top: 4px;
 }
 
-.all-complete-message {
-  margin-top: 20px;
-  padding: 16px;
-  background: linear-gradient(135deg, rgba(0, 200, 83, 0.1), rgba(0, 230, 118, 0.1));
-  border-radius: var(--radius-md);
-  text-align: center;
+/* 룰렛 슬롯 그리드 */
+.roulette-slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.roulette-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  background: rgba(41, 121, 255, 0.04);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  transition: all 0.15s ease;
+}
+
+.roulette-slot--active {
+  background: rgba(41, 121, 255, 0.15);
+  border-color: var(--primary);
+  transform: scale(1.05);
+  box-shadow: 0 0 0 3px rgba(41, 121, 255, 0.2);
+}
+
+.roulette-slot--result {
+  background: linear-gradient(135deg, rgba(41, 121, 255, 0.15), rgba(102, 126, 234, 0.2));
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(41, 121, 255, 0.25);
+  transform: scale(1.06);
+}
+
+.roulette-slot-icon {
+  font-size: 30px;
+}
+
+.roulette-slot-name {
+  font-size: 12px;
   font-weight: 600;
-  color: var(--positive);
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* 룰렛 버튼 */
+.roulette-spin-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.roulette-spin-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.roulette-spin-btn:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+/* 룰렛 결과 */
+.roulette-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.roulette-result-text {
+  font-size: 15px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.roulette-result-text strong {
+  color: var(--text-primary);
+  font-size: 17px;
+}
+
+.roulette-start-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #00c853, #00e676);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.roulette-start-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 /* 레거시 game-item 스타일 (하위 호환) */
@@ -4103,6 +4150,7 @@ input, textarea {
   font-size: 18px;
   font-weight: 700;
   color: white;
+  text-align: center;
 }
 
 .level-up-reward {
