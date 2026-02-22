@@ -115,8 +115,8 @@ export default function ChartQuiz({ onClose }) {
             <p className="result-answer">
               정답: {chart.answer === "up" ? "📈 상승" : "📉 하락"}
             </p>
-            <button className="next-btn" onClick={handleNext}>
-              다음 차트 →
+            <button className="next-btn" onClick={handleClose}>
+              완료
             </button>
           </div>
         )}

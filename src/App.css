@@ -183,6 +183,16 @@ body {
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
 }
 
+.sim-slider.points::-webkit-slider-thumb {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+
+.sim-value.points {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.15);
+}
+
 .sim-hint {
   font-size: 10px;
   color: rgba(255, 255, 255, 0.5);
@@ -1603,6 +1613,17 @@ body {
   overflow-y: auto;
   position: relative;
   animation: slideUp 0.3s ease;
+}
+
+/* 미니게임 모달 높이 통일 */
+.modal-content.balance-modal,
+.modal-content.vs-modal,
+.modal-content.fortune-modal,
+.modal-content.chart-modal {
+  height: 420px;
+  max-height: 420px;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes slideUp {
@@ -4234,7 +4255,113 @@ input, textarea {
   text-align: center;
   font-size: 13px;
   color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.battle-teams-count {
+  text-align: center;
+  font-size: 12px;
+  color: #f59e0b;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* 상품 미리보기 */
+.prize-preview {
+  display: flex;
+  gap: 8px;
   margin-bottom: 16px;
+}
+
+.prize-item {
+  flex: 1;
+  padding: 10px 6px;
+  border-radius: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prize-item.gold {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 2px solid #f59e0b;
+}
+
+.prize-item.silver {
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  border: 2px solid #9ca3af;
+}
+
+.prize-item.bronze {
+  background: linear-gradient(135deg, #fef3e2, #fed7aa);
+  border: 2px solid #d97706;
+}
+
+.prize-rank {
+  font-size: 10px;
+  font-weight: 700;
+  color: #78350f;
+}
+
+.prize-icon {
+  font-size: 18px;
+}
+
+.prize-title {
+  font-size: 9px;
+  font-weight: 600;
+  color: #374151;
+  line-height: 1.2;
+}
+
+/* 팀 미리보기 더보기 */
+.team-preview-more {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+}
+
+/* 실시간 순위 노트 */
+.rankings-note {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* 수상 표시 */
+.prize-won {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.prize-won-icon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+.prize-won-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #78350f;
+  margin-bottom: 4px;
+}
+
+.prize-won-desc {
+  font-size: 12px;
+  color: #92400e;
 }
 
 .battle-section {
@@ -4620,6 +4747,281 @@ input, textarea {
   color: var(--text-primary);
 }
 
+/* 팀 미리보기 */
+.battle-teams-preview {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.team-preview-chip {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  font-size: 18px;
+}
+
+.team-preview-chip.ours {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+/* 카테고리 그리드 */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.category-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-btn:active {
+  transform: scale(0.95);
+}
+
+.category-btn.selected {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.category-icon {
+  font-size: 20px;
+}
+
+.category-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 선택된 종목 표시 */
+.selected-stocks-display {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+}
+
+.selected-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.selected-stock-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: var(--primary);
+  color: white;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.remove-stock {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0.8;
+  padding: 0 2px;
+}
+
+/* 진행률 바 (가로) */
+.battle-progress-bar {
+  position: relative;
+  height: 24px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 16px 0;
+}
+
+.battle-progress-bar .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+  transition: width 0.2s ease;
+}
+
+.battle-progress-bar .progress-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* 실시간 순위 */
+.live-rankings {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.ranking-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+}
+
+.ranking-row.ours {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.rank-num {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--border);
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.rank-icon {
+  font-size: 20px;
+}
+
+.rank-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.rank-score {
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rank-score.positive {
+  color: var(--positive);
+}
+
+.rank-score.negative {
+  color: var(--negative);
+}
+
+.change-arrow {
+  font-size: 10px;
+}
+
+.change-arrow.up {
+  color: var(--positive);
+}
+
+.change-arrow.down {
+  color: var(--negative);
+}
+
+/* 최종 순위 */
+.final-rankings {
+  margin-bottom: 16px;
+}
+
+.rankings-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.final-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
+}
+
+.final-rank-row.ours {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.15);
+}
+
+.final-rank-row.top3 {
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.final-rank-row.ours.top3 {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%);
+}
+
+.final-rank-num {
+  width: 28px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.final-rank-icon {
+  font-size: 20px;
+}
+
+.final-rank-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.final-rank-score {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.final-rank-score.positive {
+  color: var(--positive);
+}
+
+.final-rank-score.negative {
+  color: var(--negative);
+}
+
 /* ===================================================
  * 모바일 시뮬레이션 플로팅 버튼 & 모달
  * =================================================== */
@@ -4711,6 +5113,15 @@ input, textarea {
 .mobile-sim-slider.exp::-webkit-slider-thumb {
   background: #f59e0b;
   box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.mobile-sim-slider.points::-webkit-slider-thumb {
+  background: #fbbf24;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+}
+
+.mobile-sim-value.points {
+  color: #fbbf24;
 }
 
 .mobile-sim-sectors {
@@ -4885,4 +5296,472 @@ input, textarea {
   font-weight: 600;
   color: rgba(255, 255, 255, 0.8);
   text-align: center;
+}
+
+/* ===================================================
+ * 포인트 상점 스타일
+ * =================================================== */
+.shop-modal {
+  width: 90%;
+  max-width: 400px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.shop-points {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.shop-points .points-icon {
+  font-size: 24px;
+}
+
+.shop-points .points-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.purchase-message {
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  animation: fadeInOut 2s ease;
+}
+
+.purchase-message.success {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.purchase-message.error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; }
+  10%, 90% { opacity: 1; }
+}
+
+.shop-categories {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  scrollbar-width: none;
+}
+
+.shop-categories::-webkit-scrollbar {
+  display: none;
+}
+
+.shop-cat-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.shop-cat-btn.active {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+}
+
+.shop-items {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 4px;
+}
+
+.shop-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.shop-item.owned {
+  opacity: 0.7;
+  background: #f1f5f9;
+}
+
+.shop-item .item-icon {
+  font-size: 32px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.shop-item .item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.shop-item .item-name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.shop-item .item-desc {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shop-item .item-category {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.shop-item .item-purchase {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.shop-item .item-price {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+.shop-item .buy-btn {
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shop-item .buy-btn:hover {
+  transform: scale(1.05);
+}
+
+.shop-item .buy-btn.disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.shop-item .owned-badge {
+  padding: 6px 10px;
+  background: #d1fae5;
+  color: #059669;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ===================================================
+ * 인벤토리 스타일
+ * =================================================== */
+.inventory-modal {
+  width: 90%;
+  max-width: 400px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.inventory-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.inventory-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 8px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.inventory-tab.active {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+}
+
+.equipped-status {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.equipped-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #92400e;
+  margin-bottom: 10px;
+}
+
+.equipped-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.equipped-slot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+}
+
+.equipped-slot .slot-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #78350f;
+}
+
+.equipped-slot .slot-item {
+  font-size: 12px;
+  color: #92400e;
+}
+
+.equipped-slot .slot-empty {
+  font-size: 11px;
+  color: #d97706;
+  opacity: 0.6;
+}
+
+.inventory-items {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inventory-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #94a3b8;
+}
+
+.inventory-empty .empty-icon {
+  font-size: 48px;
+}
+
+.inventory-empty p {
+  font-size: 14px;
+}
+
+.inventory-empty .empty-hint {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.inventory-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.inventory-item:hover,
+.inventory-item:active {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.inventory-item.equipped {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.inventory-item .inv-item-icon {
+  font-size: 28px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.inventory-item .inv-item-info {
+  flex: 1;
+}
+
+.inventory-item .inv-item-name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.inventory-item .inv-item-slot {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.inventory-item .inv-item-action {
+  text-align: right;
+}
+
+.inventory-item .equipped-badge {
+  padding: 6px 10px;
+  background: #d1fae5;
+  color: #059669;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.inventory-item .equip-hint {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.inventory-tip {
+  text-align: center;
+  font-size: 11px;
+  color: #94a3b8;
+  padding: 12px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 12px;
+}
+
+/* ===================================================
+ * 캐릭터/섬 장식 아이템 표시
+ * =================================================== */
+
+/* 캐릭터 장식 (머리/얼굴) - char-container는 기존 위치 유지 */
+.char-accessory {
+  position: absolute;
+  font-size: 64px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  z-index: 10;
+  animation: accessoryBounce 2s ease-in-out infinite;
+}
+
+.char-accessory.char-head {
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 72px;
+}
+
+.char-accessory.char-head.char-head-small {
+  top: -80px;
+}
+
+@keyframes accessoryBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-3px); }
+}
+
+/* 섬 장식 아이템 */
+.island-decoration {
+  position: absolute;
+  top: calc(50% - 35px);
+  right: 10%;
+  transform: translateY(-50%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.deco-item {
+  font-size: 80px;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+  animation: decoFloat 3s ease-in-out infinite;
+}
+
+.deco-tree {
+  animation-delay: 0s;
+}
+
+.deco-flower {
+  font-size: 72px;
+  animation-delay: 0.5s;
+}
+
+.deco-house {
+  font-size: 96px;
+  animation-delay: 0.2s;
+}
+
+.deco-fountain {
+  font-size: 88px;
+  animation-delay: 0.3s;
+}
+
+.deco-bench {
+  font-size: 64px;
+  animation-delay: 0.4s;
+}
+
+@keyframes decoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }

@@ -13,6 +13,8 @@ import GuestbookModal from "./components/GuestbookModal";
 import GiftModal from "./components/GiftModal";
 import TeamBattle from "./components/TeamBattle";
 import GoalSetting from "./components/GoalSetting";
+import PointShop from "./components/PointShop";
+import Inventory from "./components/Inventory";
 import "./App.css";
 
 /* 섹터별 배경 이미지 매핑 */
@@ -99,6 +101,10 @@ export default function GrowIslandApp() {
   const [isSpecialChar, setIsSpecialChar] = useState(false); // 특별 캐릭터 모드
   const [showMobileSimModal, setShowMobileSimModal] = useState(false); // 모바일 시뮬레이션 모달
   const [showCharSelect, setShowCharSelect] = useState(true); // 캐릭터 선택창 표시 여부
+  const [showShop, setShowShop] = useState(false); // 포인트 상점 모달
+  const [showInventory, setShowInventory] = useState(false); // 인벤토리 모달
+  const [inventory, setInventory] = useState([]); // 보유 아이템 목록
+  const [equipped, setEquipped] = useState({ head: null, island: null }); // 장착된 아이템
   const prevLevelRef = useRef(0); // 이전 레벨 추적
 
   /* 캐릭터 선택 처리 */
@@ -180,6 +186,23 @@ export default function GrowIslandApp() {
   const handleUseGiftChance = (categoryId, gift) => {
     setGiftChances((prev) => Math.max(0, prev - 1));
     setReceivedGifts((prev) => [...prev, gift]);
+  };
+
+  /* 아이템 구매 처리 */
+  const handlePurchase = (itemId, item) => {
+    setPoints((prev) => prev - item.price);
+    if (item.type === "decoration") {
+      setInventory((prev) => [...prev, itemId]);
+    }
+    // consumable 아이템은 바로 사용하거나 별도 관리 가능
+  };
+
+  /* 아이템 장착/해제 토글 */
+  const handleEquipToggle = (itemId, slot) => {
+    setEquipped((prev) => ({
+      ...prev,
+      [slot]: prev[slot] === itemId ? null : itemId,
+    }));
   };
 
   /* 게임 완료 시 포인트 지급 */
@@ -311,11 +334,29 @@ export default function GrowIslandApp() {
             </button>
           </div>
 
+          {/* 포인트 조절 */}
+          <div className="sim-control">
+            <label className="sim-label">
+              <span>💰 포인트</span>
+              <span className="sim-value points">{points.toLocaleString()}P</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="10000"
+              step="100"
+              value={points}
+              onChange={(e) => setPoints(parseInt(e.target.value))}
+              className="sim-slider points"
+            />
+            <div className="sim-hint">상점에서 아이템을 구매해보세요</div>
+          </div>
+
           {/* 현재 상태 요약 */}
           <div className="sim-summary">
             <div className="sim-summary-item">
               <span className="summary-label">포인트</span>
-              <span className="summary-value">{points}P</span>
+              <span className="summary-value">{points.toLocaleString()}P</span>
             </div>
             <div className="sim-summary-item">
               <span className="summary-label">완료 게임</span>
@@ -331,9 +372,24 @@ export default function GrowIslandApp() {
           {/* 전체 배경 이미지 (섹터별) */}
           <div className={`app-background ${isNegative ? 'negative' : ''}`}>
             <img src={bgSrc} alt="Island Background" className="bg-image" />
+            {/* 섬 장식 아이템 */}
+            {equipped.island && (
+              <div className="island-decoration">
+                {equipped.island === 'tree' && <span className="deco-item deco-tree">🌳</span>}
+                {equipped.island === 'house' && <span className="deco-item deco-house">🏠</span>}
+                {equipped.island === 'fountain' && <span className="deco-item deco-fountain">⛲</span>}
+              </div>
+            )}
             {/* 캐릭터 오버레이 */}
             <div className="char-container" onClick={handleCharacterClick}>
               <img src={charSrc} alt="Character" className={`char-image ${charSrc === '/5-d.png' ? 'char-small' : ''}`} />
+              {/* 머리 장식 */}
+              {equipped.head && (
+                <div className={`char-accessory char-head ${charSrc === '/5-d.png' ? 'char-head-small' : ''}`}>
+                  {equipped.head === 'hat_crown' && <span>👑</span>}
+                  {equipped.head === 'hat_ribbon' && <span>🎀</span>}
+                </div>
+              )}
               {/* 캐릭터 말풍선 */}
               {showBubble && (
                 <div className="speech-bubble">
@@ -396,6 +452,14 @@ export default function GrowIslandApp() {
                 <button className="quick-btn chart" onClick={() => setShowStockChart(true)}>
                   <span className="quick-icon">📈</span>
                   <span className="quick-label">실시간 차트</span>
+                </button>
+                <button className="quick-btn shop" onClick={() => setShowShop(true)}>
+                  <span className="quick-icon">🛍️</span>
+                  <span className="quick-label">상점</span>
+                </button>
+                <button className="quick-btn inventory" onClick={() => setShowInventory(true)}>
+                  <span className="quick-icon">🎒</span>
+                  <span className="quick-label">인벤토리</span>
                 </button>
               </div>
 
@@ -503,6 +567,26 @@ export default function GrowIslandApp() {
           <TeamBattle onClose={() => setShowTeamBattle(false)} />
         )}
 
+        {/* 포인트 상점 모달 */}
+        {showShop && (
+          <PointShop
+            points={points}
+            inventory={inventory}
+            onPurchase={handlePurchase}
+            onClose={() => setShowShop(false)}
+          />
+        )}
+
+        {/* 인벤토리 모달 */}
+        {showInventory && (
+          <Inventory
+            inventory={inventory}
+            equipped={equipped}
+            onEquipToggle={handleEquipToggle}
+            onClose={() => setShowInventory(false)}
+          />
+        )}
+
         {/* 모바일 시뮬레이션 플로팅 버튼 */}
         <button
           className="mobile-sim-fab"
@@ -608,6 +692,23 @@ export default function GrowIslandApp() {
                 >
                   ⭐ 특별 캐릭터 {isSpecialChar ? 'ON' : 'OFF'}
                 </button>
+              </div>
+
+              {/* 포인트 조절 */}
+              <div className="mobile-sim-control">
+                <label className="mobile-sim-label">
+                  <span>💰 포인트</span>
+                  <span className="mobile-sim-value points">{points.toLocaleString()}P</span>
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="10000"
+                  step="100"
+                  value={points}
+                  onChange={(e) => setPoints(parseInt(e.target.value))}
+                  className="mobile-sim-slider points"
+                />
               </div>
             </div>
           </div>
