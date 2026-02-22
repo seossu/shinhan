@@ -7,9 +7,9 @@ import React, { useState, useEffect } from "react";
 
 // 상대 팀 데이터
 const OPPONENT_TEAMS = [
-  { id: 1, name: "투자왕 팀", icon: "👑", color: "#FFD700", members: 5, avgReturn: 12.5 },
+  { id: 1, name: "투자왕 팀", icon: "👑", color: "#FFD700", members: 4, avgReturn: 12.5 },
   { id: 2, name: "슈퍼개미 팀", icon: "🐜", color: "#8B4513", members: 4, avgReturn: 8.3 },
-  { id: 3, name: "워렌버핏 팀", icon: "🎩", color: "#2C3E50", members: 6, avgReturn: 15.2 },
+  { id: 3, name: "워렌버핏 팀", icon: "🎩", color: "#2C3E50", members: 2, avgReturn: 15.2 },
   { id: 4, name: "로켓주식 팀", icon: "🚀", color: "#E74C3C", members: 4, avgReturn: -2.1 },
   { id: 5, name: "안정투자 팀", icon: "🛡️", color: "#3498DB", members: 5, avgReturn: 5.8 },
 ];

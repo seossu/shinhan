@@ -9,38 +9,10 @@ import React, { useState, useEffect } from "react";
 const CHARTS = [
   {
     id: 1,
-    image: "/charts/chart1.png",
+    image: "/asd.png",
     name: "종목 A",
-    answer: "up",
-    hint: "실적 발표 직전 차트",
-  },
-  {
-    id: 2,
-    image: "/charts/chart2.png",
-    name: "종목 B",
     answer: "down",
-    hint: "급등 후 조정 구간",
-  },
-  {
-    id: 3,
-    image: "/charts/chart3.png",
-    name: "종목 C",
-    answer: "up",
-    hint: "바닥 다지기 패턴",
-  },
-  {
-    id: 4,
-    image: "/charts/chart4.png",
-    name: "종목 D",
-    answer: "down",
-    hint: "저항선 근처",
-  },
-  {
-    id: 5,
-    image: "/charts/chart5.png",
-    name: "종목 E",
-    answer: "up",
-    hint: "골든크로스 직전",
+    hint: "차트를 보고 다음 방향을 맞춰보세요",
   },
 ];
 
