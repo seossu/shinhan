@@ -359,8 +359,8 @@ export default function GrowIslandApp() {
               <span className="summary-value">{points.toLocaleString()}P</span>
             </div>
             <div className="sim-summary-item">
-              <span className="summary-label">완료 게임</span>
-              <span className="summary-value">{completedGames.length}/4</span>
+              <span className="summary-label">출석체크</span>
+              <span className="summary-value">{completedGames.length > 0 ? "완료 ✓" : "미완료"}</span>
             </div>
           </div>
         </div>
@@ -499,7 +499,7 @@ export default function GrowIslandApp() {
             <div className="level-up-alert">
               <div className="level-up-content">
                 <span className="level-up-icon">🎉</span>
-                <span className="level-up-text">캐릭터가 성장했습니다!</span>
+                <span className="level-up-text">캐릭터가<br/> 성장했습니다!</span>
                 <span className="level-up-reward">🎟️ 선물 교환권 +1</span>
               </div>
             </div>
